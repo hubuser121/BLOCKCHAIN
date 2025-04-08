@@ -1,3 +1,5 @@
+// frontend/src/Verify.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -15,9 +17,13 @@ const Verify = () => {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('http://localhost:5000/verify', formData);
+      const res = await axios.post(
+        'https://blockchain-2h1c.onrender.com/verify', // 🔁 ✅ UPDATED URL
+        formData
+      );
       setResult(`🔍 Verification Result: ${res.data.result}`);
     } catch (err) {
+      console.error("Verification Error:", err);
       setResult("❌ Verification failed.");
     }
   };
