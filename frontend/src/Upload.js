@@ -16,7 +16,7 @@ const Upload = () => {
     formData.append("document", file);
 
     try {
-      const res = await axios.post("http://localhost:5000/upload", formData);
+      const res = await axios.post("https://blockchain-2h1c.onrender.com/upload", formData);
       setIpfsHash(res.data.ipfsHash);
     } catch (err) {
       console.error("Upload failed", err);
