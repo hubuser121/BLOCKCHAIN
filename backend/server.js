@@ -1,33 +1,33 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const Web3 = require("web3");
-const fs = require("fs");
 const crypto = require("crypto");
 const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
-// Connect to Ganache
-const web3 = new Web3("http://127.0.0.1:7545");
+// Connect to blockchain (local Ganache or public RPC)
+const web3 = new Web3(process.env.GANACHE_URL || "http://127.0.0.1:8545");
 
 // Load contract ABI and address
 const contractABI = require("./contractABI.json");
-const contractAddress = "0xf55Fc88129Cadf84E20F68C7A1a39CB6A088e5A9"; // 🔁 Replace with actual contract address!
+const contractAddress = process.env.CONTRACT_ADDRESS;
 
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-// Function to compute SHA-256 hash of a file
-function hashDocument(filePath) {
-    const fileBuffer = fs.readFileSync(filePath);
+// Function to compute SHA-256 hash from base64 file content
+function hashDocumentFromBase64(base64Data) {
+    const fileBuffer = Buffer.from(base64Data, 'base64');
     return crypto.createHash("sha256").update(fileBuffer).digest("hex");
 }
 
-// API to register a real document (addDocument)
+// ✅ Register real document
 app.post("/register", async (req, res) => {
-    const { filePath, docId, name } = req.body;
-    const docHash = hashDocument(filePath);
+    const { base64Data, docId, name } = req.body;
+    const docHash = hashDocumentFromBase64(base64Data);
 
     const accounts = await web3.eth.getAccounts();
 
@@ -39,13 +39,14 @@ app.post("/register", async (req, res) => {
     }
 });
 
-// API to verify document (verifyDocument)
+// ✅ Verify document
 app.post("/verify", async (req, res) => {
-    const { filePath, docId } = req.body;
-    const docHash = hashDocument(filePath);
+    const { base64Data, docId } = req.body;
+    const docHash = hashDocumentFromBase64(base64Data);
 
     try {
         const doc = await contract.methods.getDocument(docId).call();
+
         if (doc.hash === docHash) {
             if (!doc.isVerified) {
                 const accounts = await web3.eth.getAccounts();
@@ -60,8 +61,8 @@ app.post("/verify", async (req, res) => {
     }
 });
 
-// Start server
-const PORT = 5000;
+// ✅ Start server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`✅ Backend running at http://localhost:${PORT}`);
 });
