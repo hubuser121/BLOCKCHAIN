@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const Web3 = require("web3");
+const Web3 = require("web3").default;
 const crypto = require("crypto");
 const cors = require("cors");
 require("dotenv").config();
