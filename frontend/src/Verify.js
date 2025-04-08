@@ -3,41 +3,38 @@ import axios from 'axios';
 
 const Verify = () => {
   const [file, setFile] = useState(null);
-  const [status, setStatus] = useState('');
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const [result, setResult] = useState('');
 
   const handleVerify = async () => {
-    if (!file) return alert("Please select a file to verify!");
+    if (!file) {
+      setResult("⚠️ Please select a file to verify.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append("document", file);
+    formData.append('file', file);
 
     try {
-      const res = await axios.post("https://blockchain-2h1c.onrender.com/verify", formData);
-      setStatus(res.data.status); // expect "verified" or "fake"
+      const res = await axios.post('http://localhost:5000/verify', formData);
+      setResult(`🔍 Verification Result: ${res.data.result}`);
     } catch (err) {
-      console.error("Verification failed", err);
+      setResult("❌ Verification failed.");
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-2">Verify Document</h2>
-      <input type="file" onChange={handleFileChange} className="mb-2" />
-      <button onClick={handleVerify} className="bg-green-600 text-white px-4 py-1 rounded">Verify</button>
-
-      {status && (
-        <div className="mt-4">
-          <span className={`px-3 py-1 rounded text-white text-sm ${
-            status === 'verified' ? 'bg-green-600' : 'bg-red-600'
-          }`}>
-            {status === 'verified' ? '✅ Document Verified' : '❌ Fake Document'}
-          </span>
-        </div>
-      )}
+    <div>
+      <h2 className="text-lg font-semibold mb-2">Verify Document</h2>
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+        className="mb-4"
+      />
+      <br />
+      <button onClick={handleVerify} className="bg-green-600 text-white px-4 py-2 rounded">
+        Verify
+      </button>
+      {result && <p className="mt-4">{result}</p>}
     </div>
   );
 };

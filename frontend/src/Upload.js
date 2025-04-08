@@ -3,38 +3,38 @@ import axios from 'axios';
 
 const Upload = () => {
   const [file, setFile] = useState(null);
-  const [ipfsHash, setIpfsHash] = useState('');
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const [message, setMessage] = useState('');
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a file!");
+    if (!file) {
+      setMessage("⚠️ Please select a file first.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append("document", file);
+    formData.append('file', file);
 
     try {
-      const res = await axios.post("https://blockchain-2h1c.onrender.com/upload", formData);
-      setIpfsHash(res.data.ipfsHash);
+      const res = await axios.post('http://localhost:5000/upload', formData);
+      setMessage(`✅ ${res.data.message || 'File uploaded successfully!'}`);
     } catch (err) {
-      console.error("Upload failed", err);
+      setMessage("❌ Upload failed. Please try again.");
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-2">Upload Document</h2>
-      <input type="file" onChange={handleFileChange} className="mb-2" />
-      <button onClick={handleUpload} className="bg-blue-600 text-white px-4 py-1 rounded">Upload</button>
-
-      {ipfsHash && (
-        <div className="mt-4">
-          <p className="font-semibold">IPFS Hash:</p>
-          <p className="bg-gray-100 p-2 rounded text-sm break-all">{ipfsHash}</p>
-        </div>
-      )}
+    <div>
+      <h2 className="text-lg font-semibold mb-2">Upload Document</h2>
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+        className="mb-4"
+      />
+      <br />
+      <button onClick={handleUpload} className="bg-blue-600 text-white px-4 py-2 rounded">
+        Upload
+      </button>
+      {message && <p className="mt-4">{message}</p>}
     </div>
   );
 };

@@ -1,25 +1,39 @@
-import React, { useState } from "react";
-import Upload from "./Upload";
-import Verify from "./Verify";
-import "./style.css";
+import React, { useState } from 'react';
+import Upload from './Upload';
+import Verify from './Verify';
+import './style.css';
 
-function App() {
-  const [view, setView] = useState("upload");
+const App = () => {
+  const [page, setPage] = useState('upload');
 
   return (
-    <div className="container">
-      <h1>Blockchain-Based Document Verification</h1>
-      <div className="buttons">
-        <button onClick={() => setView("upload")} className={view === "upload" ? "active" : ""}>
-          Upload Document
-        </button>
-        <button onClick={() => setView("verify")} className={view === "verify" ? "active" : ""}>
-          Verify Document
-        </button>
+    <>
+      <div className="navbar">
+        📄 Blockchain-Based Document Verification
       </div>
-      {view === "upload" ? <Upload /> : <Verify />}
-    </div>
+
+      <div className="container">
+        <div className="mb-4 space-x-4 text-center">
+          <button
+            onClick={() => setPage('upload')}
+            className={`px-4 py-2 rounded ${page === 'upload' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
+          >
+            Upload
+          </button>
+          <button
+            onClick={() => setPage('verify')}
+            className={`px-4 py-2 rounded ${page === 'verify' ? 'bg-green-600 text-white' : 'bg-gray-300 text-black'}`}
+          >
+            Verify
+          </button>
+        </div>
+
+        <div className="card">
+          {page === 'upload' ? <Upload /> : <Verify />}
+        </div>
+      </div>
+    </>
   );
-}
+};
 
 export default App;
